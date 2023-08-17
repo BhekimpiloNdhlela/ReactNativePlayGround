@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { View, StyleSheet, Alert, Text, FlatList } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Alert,
+  useWindowDimensions,
+  FlatList
+} from "react-native";
 import { FontAwesome } from '@expo/vector-icons';
 
 import Title from "../components/ui/Title";
@@ -26,6 +32,8 @@ const GamePlay = (props) => {
 
   const [currentGuess, setCurrentGuess] = useState(initialGuess);
   const [gameGuesses, setGameGuesses] = useState([initialGuess]);
+
+  const { width, height } = useWindowDimensions();
 
   useEffect(() => {
     if (currentGuess === props.pickedNumber) {
@@ -67,9 +75,8 @@ const GamePlay = (props) => {
     setGameGuesses((previousGuesses) => [newGuess, ...previousGuesses])
   }
 
-  return (
-    <View style={styles.screen}>
-      <Title>Opponent's Guess</Title>
+  let content = (
+    <>
       <NumberContainer guessedNumber={currentGuess} />
       <Card>
         <InstructionText style={styles.instrunctionText}>Higher or Lower???</InstructionText>
@@ -86,6 +93,33 @@ const GamePlay = (props) => {
           </View>
         </View>
       </Card>
+    </>
+  )
+
+  if (width > 500) {
+    content = (
+      <>
+        <View style={styles.buttonsContainerWide}>
+          <View style={styles.buttonContainer}>
+            <PrimaryButton onPress={() => nextGuessHandler('LOWER')}>
+              <FontAwesome name='minus' size={24} color='white' />
+            </PrimaryButton>
+          </View>
+          <NumberContainer guessedNumber={currentGuess} />
+          <View style={styles.buttonContainer}>
+            <PrimaryButton onPress={() => nextGuessHandler('HIGHER')}>
+              <FontAwesome name='plus' size={24} color='white' />
+            </PrimaryButton>
+          </View>
+        </View>
+      </>
+    );
+  }
+
+  return (
+    <View style={styles.screen}>
+      <Title>Opponent's Guess</Title>
+      {content}
       <View style={styles.listContainer}>
         <FlatList
           data={gameGuesses}
@@ -100,6 +134,10 @@ const GamePlay = (props) => {
 export default GamePlay;
 
 const styles = StyleSheet.create({
+  buttonsContainerWide: {
+    flexDirection: 'row',
+    alignItems: 'ceter',
+  },
   listContainer: {
     flex: 1,
     padding: 16,
@@ -107,6 +145,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     padding: 24,
+    alignItems: 'center'
   },
   buttonContainer: {
     flex: 1

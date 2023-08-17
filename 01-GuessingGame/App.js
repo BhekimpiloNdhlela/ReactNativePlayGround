@@ -7,6 +7,7 @@ import AppLoading from 'expo-app-loading';
 import GameStart from './src/screens/GameStart';
 import GamePlay from './src/screens/GamePlay';
 import GameOver from './src/screens/GameOver';
+import { StatusBar } from 'expo-status-bar';
 
 const App = () => {
   const [fontsLoaded] = useFonts({
@@ -62,21 +63,24 @@ const App = () => {
   }
 
   return (
-    <LinearGradient
-      colors={["#4e0329", "#ddb52f"]}
-      style={styles.rootScreen}
-    >
-      <ImageBackground
-        source={require("./assets/images/background.png")}
-        resizeMode="cover"
+    <>
+      <StatusBar style='light' />
+      <LinearGradient
+        colors={["#4e0329", "#ddb52f"]}
         style={styles.rootScreen}
-        imageStyle={styles.backgroundImage}
       >
-        <SafeAreaView style={styles.rootScreen}>
-          {screen}
-        </SafeAreaView>
-      </ImageBackground>
-    </LinearGradient>
+        <ImageBackground
+          source={require("./assets/images/background.png")}
+          resizeMode="cover"
+          style={styles.rootScreen}
+          imageStyle={styles.backgroundImage}
+        >
+          <SafeAreaView style={styles.rootScreen}>
+            {screen}
+          </SafeAreaView>
+        </ImageBackground>
+      </LinearGradient>
+    </>
   );
 }
 
