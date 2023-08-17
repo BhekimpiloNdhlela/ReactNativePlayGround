@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, StyleSheet, Alert } from "react-native";
-
-
+import { View, StyleSheet, Alert, Text, FlatList } from "react-native";
 import { FontAwesome } from '@expo/vector-icons';
 
 import Title from "../components/ui/Title";
@@ -9,6 +7,7 @@ import NumberContainer from "../components/game/NumberContainer";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import Card from "../components/ui/Card";
 import InstructionText from "../components/ui/InstructionText";
+import GuessLogItem from "../components/game/GuessLogItem";
 
 const generateRandomNumberBetween = (min, max, exclude) => {
   const randomNumber = Math.floor(Math.random() * (max - min)) + min;
@@ -26,6 +25,7 @@ const GamePlay = (props) => {
   const initialGuess = generateRandomNumberBetween(1, 100, props.pickedNumber);
 
   const [currentGuess, setCurrentGuess] = useState(initialGuess);
+  const [gameGuesses, setGameGuesses] = useState([initialGuess]);
 
   useEffect(() => {
     if (currentGuess === props.pickedNumber) {
@@ -33,9 +33,15 @@ const GamePlay = (props) => {
     }
   }, [currentGuess, props.pickedNumber, props.gameOverHandler]);
 
+  useEffect(() => {
+    minBoundary = 1;
+    maxBoundary = 100;
+  }, []);
+
   const nextGuessHandler = (direction) => {
+    props.setNumberRounds(props.numberRounds + 1);
     // check if the user is lieng
-    if ((direction === "LOWER" && currentGuess < props.pickedNumber) || direction === "HIGHER" && currentGuess > props.pickedNumber) {
+    if ((direction === "LOWER" && currentGuess < props.pickedNumber) || (direction === "HIGHER" && currentGuess > props.pickedNumber)) {
       Alert.alert(
         "Don't lie!",
         "You know that unamanga",
@@ -55,7 +61,10 @@ const GamePlay = (props) => {
         console.error(`ndefined direction: '${direction}'`);
         break;
     }
-    setCurrentGuess(generateRandomNumberBetween(minBoundary, maxBoundary, currentGuess));
+
+    const newGuess = generateRandomNumberBetween(minBoundary, maxBoundary, currentGuess);
+    setCurrentGuess(newGuess);
+    setGameGuesses((previousGuesses) => [newGuess, ...previousGuesses])
   }
 
   return (
@@ -77,9 +86,13 @@ const GamePlay = (props) => {
           </View>
         </View>
       </Card>
-      {/* <View>
-                LOG ROUND
-            </View> */}
+      <View style={styles.listContainer}>
+        <FlatList
+          data={gameGuesses}
+          renderItem={(itemData) => <GuessLogItem round={gameGuesses.length - itemData.index} guess={itemData.item} />}
+          keyExtractor={(item) => item}
+        />
+      </View>
     </View>
   )
 }
@@ -87,6 +100,10 @@ const GamePlay = (props) => {
 export default GamePlay;
 
 const styles = StyleSheet.create({
+  listContainer: {
+    flex: 1,
+    padding: 16,
+  },
   screen: {
     flex: 1,
     padding: 24,

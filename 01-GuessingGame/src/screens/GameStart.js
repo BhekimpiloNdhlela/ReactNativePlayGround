@@ -1,10 +1,10 @@
 import { useState } from 'react';
+import { MaterialIcons } from '@expo/vector-icons';
 import {
   TextInput,
   View,
   StyleSheet,
   Alert,
-  Text
 } from 'react-native';
 
 import PrimaryButton from '../components/ui/PrimaryButton';
@@ -12,7 +12,6 @@ import Title from '../components/ui/Title';
 import { Colors } from '../constants/colors';
 import Card from '../components/ui/Card';
 import InstructionText from '../components/ui/InstructionText';
-import { MaterialIcons } from '@expo/vector-icons';
 const GameStart = ({ onPickedNumber }) => {
 
   const [input, setInput] = useState("");
@@ -36,7 +35,6 @@ const GameStart = ({ onPickedNumber }) => {
       return;
     }
 
-    console.log('Valid Nuymer !!!');
     onPickedNumber(chosenNumber);
   }
 
