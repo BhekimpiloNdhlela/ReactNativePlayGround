@@ -2,7 +2,6 @@ import { useContext, useLayoutEffect } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 
 import ExpenseForm from '../components/ManageExpense/ExpenseForm';
-import Button from '../components/ui/Button';
 import IconButton from '../components/ui/IconButton';
 import { GlobalStyles } from '../constants/styles';
 import { ExpensesContext } from '../store/expense-context';
