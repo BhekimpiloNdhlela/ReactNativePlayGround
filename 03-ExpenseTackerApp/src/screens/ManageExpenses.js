@@ -1,10 +1,12 @@
-import { useContext, useLayoutEffect } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { useContext, useLayoutEffect, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import ExpenseForm from '../components/ManageExpense/ExpenseForm';
 import IconButton from '../components/ui/IconButton';
 import { GlobalStyles } from '../constants/styles';
 import { ExpensesContext } from '../store/expense-context';
+import { deleteExpense, postExpense, updateExpense } from '../utils/api';
+import Loading from '../components/ui/Loading';
 
 function ManageExpense({ route, navigation }) {
   const expensesCtx = useContext(ExpensesContext);
@@ -16,14 +18,17 @@ function ManageExpense({ route, navigation }) {
     (expense) => expense.id === editedExpenseId
   );
 
+  const [loading, setLoading] = useState(false);
   useLayoutEffect(() => {
     navigation.setOptions({
       title: isEditing ? 'Edit Expense' : 'Add Expense',
     });
   }, [navigation, isEditing]);
 
-  function deleteExpenseHandler() {
+  const deleteExpenseHandler = async () => {
+    setLoading(true);
     expensesCtx.deleteExpense(editedExpenseId);
+    await deleteExpense(editedExpenseId);
     navigation.goBack();
   }
 
@@ -31,34 +36,41 @@ function ManageExpense({ route, navigation }) {
     navigation.goBack();
   }
 
-  function confirmHandler(expenseData) {
+  const confirmHandler = async (expenseData) => {
+    setLoading(true);
     if (isEditing) {
       expensesCtx.updateExpense(editedExpenseId, expenseData);
+      await updateExpense(editedExpenseId, expenseData);
     } else {
-      expensesCtx.addExpense(expenseData);
+      const id = await postExpense(expenseData);
+      expensesCtx.addExpense({ ...expenseData, id: id });
     }
     navigation.goBack();
   }
 
   return (
-    <View style={styles.container}>
-      <ExpenseForm
-        submitButtonLabel={isEditing ? 'Update' : 'Add'}
-        onSubmit={confirmHandler}
-        onCancel={cancelHandler}
-        defaultValues={selectedExpense}
-      />
-      {isEditing && (
-        <View style={styles.deleteContainer}>
-          <IconButton
-            icon="trash"
-            color={GlobalStyles.colors.error500}
-            size={36}
-            onPress={deleteExpenseHandler}
+    <>
+      {loading ? <Loading /> :
+        <View style={styles.container}>
+          <ExpenseForm
+            submitButtonLabel={isEditing ? 'Update' : 'Add'}
+            onSubmit={confirmHandler}
+            onCancel={cancelHandler}
+            defaultValues={selectedExpense}
           />
+          {isEditing && (
+            <View style={styles.deleteContainer}>
+              <IconButton
+                icon="trash"
+                color={GlobalStyles.colors.error500}
+                size={36}
+                onPress={deleteExpenseHandler}
+              />
+            </View>
+          )}
         </View>
-      )}
-    </View>
+      }
+    </>
   );
 }
 

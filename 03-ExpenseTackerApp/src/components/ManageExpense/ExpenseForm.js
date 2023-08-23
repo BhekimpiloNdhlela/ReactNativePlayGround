@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import Input from './Input';
 import Button from '../ui/Button';
 import { getFormattedDate } from '../../utils/utils';
+import { GlobalStyles } from '../../constants/styles';
 
 function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
   const [inputs, setInputs] = useState({
@@ -69,6 +70,7 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
       <Text style={styles.title}>Your Expense</Text>
       <View style={styles.inputsRow}>
         <Input
+          invalid={!inputs.amount.isValid}
           style={styles.rowInput}
           label="Amount"
           textInputConfig={{
@@ -78,6 +80,7 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
           }}
         />
         <Input
+          invalid={!inputs.date.isValid}
           style={styles.rowInput}
           label="Date"
           textInputConfig={{
@@ -89,17 +92,16 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
         />
       </View>
       <Input
+        invalid={!inputs.description.isValid}
         label="Description"
         textInputConfig={{
           multiline: true,
-          // autoCapitalize: 'none'
-          // autoCorrect: false // default is true
           onChangeText: inputChangedHandler.bind(this, 'description'),
           value: inputs.description.value,
         }}
       />
       {formIsInvalid && (
-        <Text>Invalid input values - please check your entered data!</Text>
+        <Text style={styles.errorText}>Invalid input values - please check your entered data!</Text>
       )}
       <View style={styles.buttons}>
         <Button style={styles.button} mode="flat" onPress={onCancel}>
@@ -116,6 +118,12 @@ function ExpenseForm({ submitButtonLabel, onCancel, onSubmit, defaultValues }) {
 export default ExpenseForm;
 
 const styles = StyleSheet.create({
+
+  errorText: {
+    textAlign: 'center',
+    color: GlobalStyles.colors.error500,
+    margin: 8
+  },
   form: {
     marginTop: 40,
   },
